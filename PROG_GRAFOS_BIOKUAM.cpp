@@ -27,6 +27,47 @@
 #include <iomanip> //Librería que permite manipular el formato de impresión (Decimales, alineaciones, etc)
 using namespace std; 
 
+//STRUCT QUE NOS REPRESENTA LA INFORMACIÓN DE LAS MEDICIONES GUARDADA EN CADA NODO
+struct Medicion {
+	float pH; 
+	float temperatura; 
+	string fecha; 
+	string hora;
+	bool existe; 
+	//Inicializador de atributos cuando se crea el objeto (CONSTRUCTOR):
+	Medicion() : pH(0.0f), temperatura(0.0f), fecha(""), hora(""), existe(false) {}
+};
+
+//STRUCT PARA LA LISTA DE ADYACENCIA (VECINOS, PESO [DISTANCIA EN CM]) REPRESENTACIÓN DE LAS CONEXIONES: 
+struct Adyacencia {
+	int vecino; //Índice del nodo o vértice
+	double peso; //Distancia en centímetros
+	Adyacencia(int v, double p) : vecino(v), peso(p) {} //Constructor para la creación del arco
+};
+
+//FUNCIONES DE FECHA Y HORA: 
+	//A) OBTENER LA FECHA ACTUAL EN STRING (FORMATO ES: DD/MM/AAAA)
+string fechaActual(){
+	time_t t = time(0); //Obtiene fecha y hora actual del sistema (Segundos desde 1970)
+	tm* fecha = localtime(&t); //Convierte tiempo a una estructura tm
+	stringstream ss; //Buffer para construir la fecha como texto
+	ss 	<< setw(2) << setfill('0') << fecha->tm_mday << "/" //Formato indica que el número debe ocupar dos dígitos, en caso que no lo llena con ceros
+		<< setw(2) << setfill('0') << (fecha->tm_mon + 1) << "/" //Obtiene el mes, se suma 1 porque los meses van de 0-11
+		<< (fecha->tm_year + 1990); //Obtiene los años contados desde 1990
+	return ss.str(); //Devuelve fecha armada en STRING
+}
+	//B) OBTENER LA HORA ACTUAL EN STRING (FORMATO ES: HH/MM/SS)
+string horaActual(){
+	time_t t = time(0); //Obtiene fecha y hora actual del sistema (Segundos desde 1970)
+	tm* h = localtime(&t); //Convierte el tiempo a una estructura tm
+	stringstream ss; //Buffer para construir la fecha como texto
+	ss	<< setw(2) << setfill('0') << h->tm_hour << ":" //Formato indica que la hora debe ocupar dos dígitos, en caso que no lo llena con ceros
+		<< setw(2) << setfill('0') << h->tm_min << ":" //Formato indica que los minutos deben ocupar dos dígitos, en caso que no lo llena con ceros
+		<< setw(2) << setfill('0') << h->tm_sec; //Formato indica que los segundos deben ocupar dos dígitos, en caso que no lo llena con ceros
+	return ss.str(); //Devuelve la hora armada en STRING 
+}
+
+
 int main(){
 	SetConsoleOutputCP(CP_UTF8); // Función para el uso de tildes en C++
 	cout<<"Análisis"; 
