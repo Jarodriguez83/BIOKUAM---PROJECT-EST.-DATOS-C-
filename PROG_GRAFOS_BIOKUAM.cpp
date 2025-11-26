@@ -16,8 +16,15 @@
 	PROYECTO: Prototipo de Embarcación para la medición y monitoreo del pH del agua orientado al riego en cultivos de Maíz
 	LUGAR: Municipio de Simijaca, Cundinamarca 
 */
-#include <iostream>
-#include <windows.h> //LIBRERÍA UTILIZADA PARA LAS TILDES
+#include <iostream> //Librería utilizada para el manejo de la entrada y salida de datos (cin, cout)
+#include <windows.h> //Librería utilizada en este programa para el manejo de tíldes
+#include <vector> //Librería que nos permite utilizar la estructura <vector> que es un arreglo dinámico. Utilizada pra la lista de adyacencia
+#include <string> //Librería que permite el manejo de la fecha, hora y otros mensajes dentro de los nodos
+#include <queue> //Librería útil porque DIJKSTRA necesita un priority_queue para siempre determinar el nodo con la distancia más pequeña
+#include <limits> //Librería utilizada para inicializar distancias infinitas en el algoritmo de DIJKSTRA 
+#include <ctime> //Librería utilizada para obtener la FECHA y HORA del sistema
+#include <sstream> //Librería utilizada porque permite convertir datos a string (Útil para construir la fecha y hora)
+#include <iomanip> //Librería que permite manipular el formato de impresión (Decimales, alineaciones, etc)
 using namespace std; 
 
 int main(){
