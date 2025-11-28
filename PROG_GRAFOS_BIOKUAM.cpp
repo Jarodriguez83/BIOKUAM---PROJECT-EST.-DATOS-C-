@@ -67,6 +67,34 @@ string horaActual(){
 	return ss.str(); //Devuelve la hora armada en STRING 
 }
 
+	//CREACIÓN DEL GRAFO:  
+// - Implementación del grafo con la siguiente estructura: 
+	// A) nodesNames: Nombres automáticos "Nodo 1", "Nodo 2", ...
+	// B) mediciones: vector <Medicion> con la última lectura del nodo  
+	// C) adj: vector <vector<Adyacencia>> para la lista de adyacencia
+
+class Grafo{
+private: 
+	vector<string> nodesNames; //Vector donde cada posición guarda el NOMBRE DEL NODO
+	vector<Medicion> mediciones; //Vector donde cada posición guarda la MEDICIÓN MÁS RECIENTE (pH, Temperatura, Fecha, Hora, Existe[Para saber si ya tiene DATOS])
+	vector<vector<Adyacencia>> adj;  //Vector para la lista de ADYACENCIA, permite almacenar el GRAFO de forma eficiente y ejecutar DIJKSTRA
+public:  
+	Grafo() {} //Constructor vacío
+	int numNodos() const{
+		return (int)nodesNames.size();  //Devuelve el número actual de nodos 
+	}
+	//Función para poder agregar un nuevo nodo. Retorna el índice (1-ÚLTIMO)
+	int agregarNodo(){
+		int nuevoIndex = numNodos() + 1; //Determina el número que tendrá el nuevo nodo
+		//FUNCIÓN: .push_back sirve para AGREGAR un elemento al final del vector
+		nodesNames.push_back("NODO " + to_string (nuevoIndex)); //Agrega el NOMBRE del nuevo nodo al vector NODESNAMES
+		mediciones.push_back(Medicion()); //Agrega las MEDICIONES la NODO
+		adj.emplace_back(); //Crea un OBJETO directamente dentro del VECTOR 
+		//DIFERENCIA ENTRE .push_back Y ENTRE .emplace_back: Una crea el objeto fuera de la función y luego los agrega. La otra los crea dentro de la función y los agrega.
+		cout << "OK. NODO AGREGADO: " << nodesNames.back() << " | ÍNDICE " << nuevoIndex << ")" <<endl;
+		//FUNCIÓN: .back permite acceder al ÚLTIMO ELMENTO del VECTOR
+	}
+};
 
 int main(){
 	SetConsoleOutputCP(CP_UTF8); // Función para el uso de tildes en C++
