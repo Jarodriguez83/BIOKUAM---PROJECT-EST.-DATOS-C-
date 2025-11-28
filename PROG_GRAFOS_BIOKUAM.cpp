@@ -179,9 +179,43 @@ public:
 			return dist; 
 		}
 		
-		using PDI = pair <double, int>; 
-		priority_queue <PDI, vector<PDI>, greater<PDI>> pq;  
+		using PDI = pair <double, int>; //Double = Distancia acumulada | int =Índice del nodo
+		priority_queue <PDI, vector<PDI>, greater<PDI>> pq; //Cola de prioridad invertida (Toma el valor más pequeño)
+		//PDI = Elementos almacenados (Distancia, Nodo)
+		//vector<PDI> = Contenedor Interno
+		//greater<PDI> = El orden (El menor tiene prioridad)
+		dist[origen-1] = 0.0; //Así mismo la distancia es 0
+		pq.push({0.0, origen});  //Inserta en la cola de prioridad el primer elemento
+		
+		while (!pq.empty()) { //Mientras la cola de prioridad tenga nodos pendientes, el algoritmo sigue 
+		//Esta cola siempre entrega el nodo con la distancia más pequeña primero
+			auto [d, u] = pq.top(); pq.pop(); //Extrae el elemento con menor distancia | pq.pop() = Lo saca de la cola
+			if (d > dist[u-1]) continue; //Si la distancia que sacamos de la cola ya no es la actual
+			//RECORRER ADYACENCIAS
+			for (const auto &ady : adj[u-1]) {
+				int v = ady.vecino; //Nodo vecino del actual
+				double peso = ady.peso;  //Peso de la arista de U --> V 
+				if(dist[v-1] > dist[u-1] + peso) {
+					dist[v-1] = dist[u-1] + peso; //Guarda la nueva distancia más corta hacia el nodo V 
+					pq.push({dist[v-1], v}); //El vecino V vuelve a la cola con su nueva distancia mínima
+				}
+			}
+		}
+		return dist; //Retorna las distancias mínimas desde el nodo de origen
 	}
+	//FUNCIÓN DIJKSTRA DE ORIGEN A DESTINO CON CAMINO 
+	pair <double, vector<int>> dijsktraCamino(int origen, int destino) const {
+		const double INF = numeric_limits<double>::infinity(); 
+		int n = numNodos();  
+		vector <double> dist(n, INF);
+		vector <int> padre(n, -1);
+		if (!indiceValido(origen) || !indiceValido(destino)) {
+			cout << "ERROR. ÍNDICE ORIGEN O DESTINO INVÁLIDO. " << endl; 
+			return {INF, {}}; 
+		} 
+		
+	}
+	
 	
 	
 };
