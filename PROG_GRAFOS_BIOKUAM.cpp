@@ -91,9 +91,99 @@ public:
 		mediciones.push_back(Medicion()); //Agrega las MEDICIONES la NODO
 		adj.emplace_back(); //Crea un OBJETO directamente dentro del VECTOR 
 		//DIFERENCIA ENTRE .push_back Y ENTRE .emplace_back: Una crea el objeto fuera de la función y luego los agrega. La otra los crea dentro de la función y los agrega.
-		cout << "OK. NODO AGREGADO: " << nodesNames.back() << " | ÍNDICE " << nuevoIndex << ")" <<endl;
+		cout << "OK. NODO AGREGADO: " << nodesNames.back() << " | ÍNDICE " << nuevoIndex << endl;
 		//FUNCIÓN: .back permite acceder al ÚLTIMO ELMENTO del VECTOR
+		return nuevoIndex;  
 	}
+	bool indiceValido(int idx) const { //Verifica si el número IDX es un índice válido de un nodo en el grafo
+		return idx >= 1 && idx <= numNodos();  //Indica si el índice es correcto
+	}
+	
+	void agregarArista(int u, int v, double peso){
+		// U --> NODO DE ORIGEN 
+		// V --> NODO DE DESTINO
+		// ! = NO VALIDO | || = Ó
+		if (!indiceValido(u) || !indiceValido(v)) {
+			cout << "ERROR. ÍNDICE DE NODO INVÁLIDO. USE ÍNDICES ENTRE 1 Y " << numNodos() << endl; 
+			return;  
+		}
+		if ( u==v){ //Verifica que no sean IGUALES
+			cout << "ERROR. NO SE PERMITEN ARISTAS DE UN NODO ASÍ MISMO. " << endl; 
+			return; 
+		}
+		//Función para evitar aristas duplicadas : Verificar si ya exite la conexión. 
+		//ADY REPRESENTA CADA CONEXIÓN EXISTENTE
+		for (const auto &ady : adj[u-1]){ //Recorre todas las adyacencias del NODO U
+			if (ady.vecino == v){ //Verifica si ya están conectadas U con V
+				cout << "AVISO. YA EXISTE UNA ARISTA ENTRE " << nodesNames[u-1] << " Y " << nodesNames[v-1] << endl; 
+				return; 
+			}
+		}
+		adj[u-1].emplace_back(v, peso); //Registra la conexión entre U --> V 
+		//FUNCIÓN .emplace_back(v , peso): Agrega una adyacencia hacia el nodo V con esa distancia
+		adj[v-1].emplace_back(u, peso); //Registra la conexicón entre V --> U (Ya que es NO DIRIGIDO)
+		cout 	<< "OK. ARISTA AGREGADA: "	<< nodesNames[u-1] << "<--->" << nodesNames[v-1]
+				<< " | LA DISTANCIA ES: " << peso << "CM" <<endl; 
+	}
+	//FUNCIÓN PARA MOSTRAR EL GRAFO COMPLETO: NODOS, MEDICIONES Y ADYACENCIAS
+	void mostrarGrafo() const {
+		cout << "	IMPRESIÓN DEL GRAFO COMPLETO CON LISTA DE ADYACENCIA	" << endl; 
+		int n = numNodos(); //Constante N para almacenar el número de NODOS
+		if (n == 0){ //Verificación de que el GRAFO NO este VACÍO
+			cout << "EL GRAFO SE ENCUENTRA VACÍO " << endl; 
+			return; 
+		}
+		for (int i=0; i<n; ++i){
+			cout << nodesNames[i] << " | ÍNDICE " << (i+1) << endl; 
+			if (mediciones[i].existe){
+				cout	<< "- PH: " << mediciones[i].pH
+						<< "- TEMPERATURA: " << mediciones[i].temperatura
+						<< "- FECHA: " << mediciones[i].fecha
+						<< "- HORA: " << mediciones[i].hora;  
+			} else{
+				cout << " NO HAY MEDICIONES REGISTRADAS " << endl;  
+			}
+			cout << "LAS CONEXIONES SON: " << endl; 
+			if (adj[i].empty()){
+				cout << "NO HAY NINGUNA CONEXIÓN" << endl; 
+			} else{
+				for (const auto &ady : adj[i]) {
+					cout << " --> (" << nodesNames[ady.vecino - 1] << ", " << ady.peso << " CM)";  
+				}
+				cout << endl; 
+			}
+		}
+		cout << "------------------------------------------------------------"<<endl; 
+	}
+	//FUNCIÓN PARA REGISTRAR O ACTUALIZAR LA MEDICIÓN EN UN NODO: 
+	void registrarMedicionEnNodo(int idx, float pH, float temp, const string & fecha, const string & hora){
+		if(!indiceValido(idx)) {
+			cout << "ERROR. ÍNDICE DE NODO INVÁLIDO. " << endl; 
+			return; 
+		}		
+		Medicion & m = mediciones [idx-1]; 
+		m.pH = pH;  
+		m.temperatura = temp;  
+		m.fecha = fecha; 
+		m.hora = hora; 
+		m.existe = true; 
+		cout << "CORRECTO. MEDICIÓN REGISTRADA EN " << nodesNames[idx-1] << endl; 
+	}
+	//DIJKSTRA: ORIGEN A TODOS (DISTANCIAS MÍNIMAS). DISTANCIA EN CENTÍMETROS: 
+	vector <double> dijkstraDistancias(int origen) const { //Devuelve un vector de DISTANCIAS MÍNIMAS
+		const double INF = numeric_limits<double>::infinity(); //Inicializar distancias de nodos que aún no han sido visitados
+		int n = numNodos(); //Guarda los NODOS que tiene el GRAFO, para inicializar el vector correctamente
+		vector <double> dist(n, INF);  //Crea el vector 'dist' del tamaño n, todos con distancias INF
+		if (!indiceValido(origen)) { //Verifica si el índice dado como ORIGEN si EXISTE
+			cout << "ERROR. ÍNDICE DE ORIGEN INVÁLIDO. " << endl; 
+			return dist; 
+		}
+		
+		using PDI = pair <double, int>; 
+		priority_queue <PDI, vector<PDI>, greater<PDI>> pq;  
+	}
+	
+	
 };
 
 int main(){
