@@ -204,17 +204,75 @@ public:
 		return dist; //Retorna las distancias mínimas desde el nodo de origen
 	}
 	//FUNCIÓN DIJKSTRA DE ORIGEN A DESTINO CON CAMINO 
-	pair <double, vector<int>> dijsktraCamino(int origen, int destino) const {
-		const double INF = numeric_limits<double>::infinity(); 
-		int n = numNodos();  
-		vector <double> dist(n, INF);
-		vector <int> padre(n, -1);
-		if (!indiceValido(origen) || !indiceValido(destino)) {
+	pair<double, vector<int>> dijsktraCamino(int origen, int destino) const { //Devuelve par de valores. Calculando el camino más corto desde origen a destino
+		const double INF = numeric_limits<double>::infinity(); //Valor usado para indicar distancias aún desconocidas
+		int n = numNodos();  //Crear tamaño adecuado
+		vector <double> dist(n, INF); //Vector con N distancias inicializadas en infinito
+		vector <int> padre(n, -1); //Guarda el padre de cada nodo cunado encuentra un mejor camino
+		if (!indiceValido(origen) || !indiceValido(destino)) { //Revisa que ORIGEN y DESTINO existan en el grafo
 			cout << "ERROR. ÍNDICE ORIGEN O DESTINO INVÁLIDO. " << endl; 
 			return {INF, {}}; 
 		} 
 		
+		using PDI = pair <double, int>; 
+		priority_queue <PDI, vector<PDI>, greater<PDI>> pq; //Cola de prioridad tipo min-heap
+		dist[origen-1] = 0.0; //Inicializa la distancia del nodo origen
+		pq.push({0.0, origen}); //Agregar a la cola de prioridad 
+		
+		while (!pq.empty()) { //Continúa mientras haya nodos por procesar en la cola de prioridad 
+			auto [d, u] = pq.top(); pq.pop(); //Extrae el par con menor distancia 
+			if (d > dist[u-1]) continue; //Evita procesos obsoletos
+			if (u == destino) break; //Si ya esta en el destino se puede parar
+			for (const auto &ady : adj[u-1]) { //Recorre todas las conexiones del nodo U
+				int v = ady.vecino; //Obtiene la información del ARCO
+				double peso = ady.peso; 
+				if (dist[v-1] > dist[u-1] + peso) { //Si hay un camino más corto del que conocemos
+					dist[v-1] = dist[u-1] + peso; //Guarda la distancia más corta hacia V
+					padre[v-1] = u; 
+					pq.push({dist[v-1], v});  //Se agrega a la cola
+				}
+			}
+		}
+		
+		double distanciaFinal = dist[destino-1]; //Toma la distancia minima calculada hacia ese NODO
+		if (distanciaFinal == INF) { //No se puede llegar a ese NODO desde el ORIGEN
+			return {INF, {}}; //No existe una ruta posible
+		}
+		//FUNCIÓN PARA LA RECONSTRUCCIÓN DEL CAMINO
+		vector<int> caminoReverso; //Crear un vector para almacenar la ruta al revés
+		int actual = destino; //Empieza desde el nodo destino
+		while(actual!=-1) { //El ciclo es valido mientras exista un padre válido
+			caminoReverso.push_back(actual); //Guarda el nodo actual en la ruta
+			if (actual == origen) break; //Si llega al origen, se termina el ciclo
+			actual = padre[actual-1]; //Saltar al padre del nodo actual
+		}
+		//CONDICIÓN: SI NO HAY ORIGEN, NO HAY CAMINO
+		if (caminoReverso.empty() || caminoReverso.back() != origen){
+			return {INF, {}};
+		}
+		//FUNCIÓN PARA INVERTIR EL CAMINO
+		vector<int> camino(caminoReverso.rbegin(), caminoReverso.rend());
+		return {distanciaFinal, camino}; 
 	}
+	//FUNCIÓN PARA MOSTRAR LAS DISTANCIAS MÍNIMAS DESDE EL ORIGEN A CUALQUIER PUNTO
+	void mostrarDijkstraATodos (int origen) const {
+		if (!indiceValido(origen)) {
+			cout << "ERROR. ÍNDICE DE ORIGEN INVÁLIDO" << endl; 
+			return; 
+		}
+		cout << "FUNCIÓN DIJKSTRA (DISTANCIAS MINIMAS) DESDE: " << nodesNames[origen-1] << "(EN CM)" << endl; 
+		vector<double> dist = dijkstraDistancias(origen);
+		for (int i=0; i<numNodos(); i++) {
+			cout << " - " << nodesNames[i] << " : ";  
+			if (dist[i] == numeric_limits<double>::infinity()){
+				cout << "INACCESIBLE " << endl;  
+			} else{
+				cout << dist[i] << "CM" << endl; 
+			}
+		} 
+	}
+	
+	
 	
 	
 	
