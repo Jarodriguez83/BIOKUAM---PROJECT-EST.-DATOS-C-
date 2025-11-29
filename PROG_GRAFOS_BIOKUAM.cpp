@@ -307,8 +307,143 @@ public:
 		}
 	}
 };
+//FUNCIÓN PARA EL MENÚ DEL PROGRAMA
+void mostrarMenu(){
+    cout << "\n========= MENU PRINCIPAL BIOKUAM =========" << endl;
+    cout << " 1) AGREGAR NODO " << endl; 
+    cout << " 2) AGREGAR ARISTA (NO DIRIGIDA) CON DISTANCIA EN CM " <<endl; 
+    cout << " 3) MOSTRAR EL GRAFO (NODOS, MEDICIONES Y ADYACENCIAS) " <<endl; 
+	cout << " 4) REGISTRAR O ACTUALIZAR LA MEDICIÓN EN UN NODO " <<endl;
+	cout << " 5) DISTANCIA ENTRE UN PUNTO DE ORIGEN A TODOS LOS DEMÁS (DIJKSTRA) " <<endl;
+	cout << " 6) DISTANCIA ENTRE UN PUNTO DE ORIGEN Y OTRO DE DESTINO (DIJKSTRA)" <<endl;
+	cout << " 7) MOSTRAR EL RESUMEN DE LAS MEDICIONES " <<endl;
+	cout << " 0) SALIR DEL PROGRAMA 'BIOKUAM' " <<endl;
+	cout << "	SELECCIONE UNA DE LAS OPCIONES: "; 
+}
 
 int main(){
 	SetConsoleOutputCP(CP_UTF8); // Función para el uso de tildes en C++
-	cout<<"Análisis"; 
+	Grafo grafo; 
+	int opcion = -1; 
+	cout << " ==========================================\n";
+    cout << "|                 BIOKUAM                  |\n";
+    cout << " ==========================================\n";
+    cout << "|  CREADO POR:                             |\n";
+    cout << "|    - Jhon Alexander Rodriguez Redondo    |\n";
+    cout << "|    - Jader Santiago Nieves Tami          |\n";
+    cout << " ------------------------------------------\n";
+    do{
+    	mostrarMenu(); 
+    	if (!(cin >> opcion)){
+    		cin.clear(); 
+    		cin.ignore(numeric_limits<streamsize>::max()); 
+    		cout << endl; 
+    		cout << "ERROR. LA ENTRADA ES INVÁLIDA. INTENTE DE NUEVO" << endl; 
+    		continue;  
+		}
+		switch (opcion){
+			case 1: {
+				grafo.agregarNodo(); //SE AGREGA EL NODO
+				break;
+			}
+			case 2: { //AGREGAR UNA ARISTA
+				if (grafo.numNodos() < 2){
+					cout << "AL MENOS DEBE HABER DOS NODOS PARA CREAR UNA ARISTA " << endl; 
+					break; 
+				}
+				int u, v; 
+				double peso; 
+				cout << "- INGRESE EL ÍNDICE DEL NODO U (ORIGEN): "; 
+				cin >> u; 
+				cout << "- INGRESE EL ÍNDICE DEL NODO V (DESTINO): ";  
+				cin >> v;  
+				cout << "- INGRESE LA DISTANCIA QUE HAY ENTRE EL NODO U Y V (CM): ";  
+				cin >> peso; 
+				if (peso <= 0){
+					cout << "ERROR. LA DISTANCIA DEBE SER UN NÚMERO POSITIVO. " << endl;
+				} else {
+					grafo.agregarArista(u, v, peso); 
+				}
+				break;
+			}
+			case 3: {
+				grafo.mostrarGrafo(); //MOSTRAR EL GRAFO
+				break;
+			}
+			case 4: {
+				//REGISTRO DE LA MEDICIÓN EN UN NODO
+				if (grafo.numNodos() == 0){
+					cout << "ERROR. NO HAY NODOS. AGREGUE AL MENOS UNO. " << endl; 
+					break; 
+				}
+				int idx; 
+				cout << "- INGRESE EL ÍNDICE DEL NODO (1 - " << grafo.numNodos() << "): "; 
+				cin >> idx; 
+				if (!grafo.indiceValido(idx)) {
+					cout << "ERROR. ÍNDICE INVÁLIDO" << endl; 
+					break; 
+				}
+				float pH, temp;  
+				cout << "- INGRESE EL VALOR DE PH: ";
+				cin >> pH; 
+				cout << "- INGRESE EL VALOR DE LA TEMPERATURA (°C): ";  
+				cin >> temp; 
+				cout << "- ¿DESEAS USAR FECHA/HORA ACTUAL? (SI(S) | NO(N)): "; 
+				char r; 
+				cin >> r; 
+				string f = fechaActual(); 
+				string h = horaActual();  
+				if (r == 'N' || r == 'n'){
+					cin.ignore(); 
+					cout << "- INGRESE LA FECHA (DD/MM/AAAA): "; 
+					getline(cin, f); 
+					cout << "- INGRESE LA HORA (HH:MM:SS): "; 
+					getline(cin, h); 
+				}
+				grafo.registrarMedicionEnNodo(idx, pH, temp, f, h); 
+				break;
+			}
+			case 5: {
+				//FUNCIÓN DIJKSTRA: DESDE EL PUNTO A HASTA CUALQUIER PUNTO
+				if (grafo.numNodos() == 0){
+					cout << "ERROR. NO HAY NODOS" << endl; 
+					break; 
+				}
+				int origen;  
+				cout << "- INGRESE EL ÍNDICE DE ORIGEN (1 - " <<grafo.numNodos() << "): "; 
+				cin>>origen; 
+				if (!grafo.indiceValido(origen)) {
+					cout << "ERROR. ÍNDICE INVÁLIDO. " << endl; 
+					break; 
+				}
+				grafo.mostrarDijkstraATodos(origen); 
+				break;
+			}
+			case 6: {
+				//FUNCIÓN DIJKSTRA: DESDE UN PUNTO A HASTA UN PUNTO B
+				if (grafo.numNodos() < 2){
+					cout << "ERROR. DEBE HABER AL MENOS DOS NODOS." << endl; 
+					break; 
+				}
+				int origen, destino; 
+				cout << "- INGRESE EL ÍNDICE DE ORIGEN (1 - " <<grafo.numNodos() << "): "; 
+				cin >> origen; 
+				cout << "- INGRESE EL ÍNDICE DE DESTINO (1 - " <<grafo.numNodos() << "): "; 
+				cin >> destino; 
+				grafo.mostrarDijkstraA_B(origen, destino);  
+				break;
+			}
+			case 7: {
+				grafo.mostrarMediciones(); 
+				break;
+			}
+			case 0: {
+				cout << "SALIENDO DEL PROGRAMA" << endl; 
+				break;
+			}
+			default: 
+				cout << "ERROR. OPCIÓN INVÁLIDA. " << endl; 
+		}
+	} while(opcion!=0); 
+	return 0; 
 }
