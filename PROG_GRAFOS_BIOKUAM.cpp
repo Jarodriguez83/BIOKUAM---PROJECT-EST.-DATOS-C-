@@ -204,7 +204,7 @@ public:
 		return dist; //Retorna las distancias mínimas desde el nodo de origen
 	}
 	//FUNCIÓN DIJKSTRA DE ORIGEN A DESTINO CON CAMINO 
-	pair<double, vector<int>> dijsktraCamino(int origen, int destino) const { //Devuelve par de valores. Calculando el camino más corto desde origen a destino
+	pair<double, vector<int>> dijkstraCamino(int origen, int destino) const { //Devuelve par de valores. Calculando el camino más corto desde origen a destino
 		const double INF = numeric_limits<double>::infinity(); //Valor usado para indicar distancias aún desconocidas
 		int n = numNodos();  //Crear tamaño adecuado
 		vector <double> dist(n, INF); //Vector con N distancias inicializadas en infinito
@@ -264,18 +264,48 @@ public:
 		vector<double> dist = dijkstraDistancias(origen);
 		for (int i=0; i<numNodos(); i++) {
 			cout << " - " << nodesNames[i] << " : ";  
-			if (dist[i] == numeric_limits<double>::infinity()){
+			if (dist[i] == numeric_limits<double>::infinity()){ //Si la distancia esta en INFINITO el camino NO EXISTE
 				cout << "INACCESIBLE " << endl;  
 			} else{
-				cout << dist[i] << "CM" << endl; 
+				cout << dist[i] << "CM" << endl; //Si hay camino, muestra la distancia entre los vértices
 			}
 		} 
 	}
-	
-	
-	
-	
-	
+	//FUNCIÓN PARA MOSTRAR LAS DISTANCIAS ENTRE UN PUNTO A Y UN PUNTO B 
+	void mostrarDijkstraA_B (int origen, int destino) const {
+		if(!indiceValido(origen) || !indiceValido(destino)) {
+			cout << "ERROR. ÍNDICE ORIGEN O DESTINO INCORRECTO. " << endl; 
+			return; 
+		}	
+		auto [dist, camino] = dijkstraCamino(origen, destino);  
+		cout << "FUNCIÓN DIJKSTRA. DEL PUNTO " << nodesNames[origen-1] << " A " << nodesNames[destino-1] << " : " << endl;
+		if (dist==numeric_limits<double>::infinity() || camino.empty()) {
+			cout << "NO EXISTE CAMINO ENTRE LOS NODOS" << endl;  
+			return; 	
+		}
+		cout << "- LA DISTANCIA MÍNIMA ES: " << dist << "CM" << endl; 
+		cout << "- EL CAMINO ES: ";  
+		for (size_t i = 0; i < camino.size(); ++i){
+			cout << nodesNames[camino[i]-1]; 
+			if (i + 1 < camino.size()) cout << "-->"; 
+		}
+		cout << endl; 
+	}
+	//FUNCIÓN PARA MOSTRAR EL RESUMEN DE LAS MEDICIONES 
+	void mostrarMediciones() const {
+		cout << "	MEDICIONES REGISTRADAS POR NODO		" << endl; 
+		for (int i=0; i<numNodos(); ++i){
+			cout << nodesNames[i] << ": ";  
+			if (mediciones[i].existe) {
+				cout 	<< "- PH: " << mediciones[i].pH
+				 		<< "- TEMPERATURA: " << mediciones[i].temperatura
+				 		<< "- FECHA: " << mediciones[i].fecha
+				 		<< "- HORA: " << mediciones[i].hora << endl; 
+			} else{
+				cout << "NO SE ENCONTRARON MEDICIONES" << endl;
+			}
+		}
+	}
 };
 
 int main(){
